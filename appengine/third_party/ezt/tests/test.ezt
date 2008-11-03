@@ -1,0 +1,15 @@
+[nonseq.attr]
+[for nonseq.seq]
+  [nonseq.seq.attr]
+[end]
+
+[define newvar]
+  Some raw text defined into 'newvar' using the "define" syntax.
+[end]
+Using the "[[]define]" syntax here: [newvar]
+
+["nonseq.attr=%0 string=%1 nonseq.attr=%0 (again)" nonseq.attr "hi"]
+
+raw=[sensitive]
+html=[format "html"][sensitive][end]
+xml=[format "xml"][sensitive][end]

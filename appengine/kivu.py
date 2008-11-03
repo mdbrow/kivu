@@ -1,7 +1,16 @@
+import os
+import sys
+
 from google.appengine.api import users
 from google.appengine.ext import webapp
 from google.appengine.ext.webapp.util import run_wsgi_app
+from third_party.ezt import ezt
+
 import database
+
+
+# The path to the root of our resources.
+_RESOURCE_ROOT = os.path.dirname(sys.modules[__name__].__file__)
 
 
 def EnsureLoggedIn(fn):
@@ -18,7 +27,9 @@ class MainPage(webapp.RequestHandler):
   @EnsureLoggedIn
   def get(self):
     self.response.headers['Content-Type'] = 'text/plain'
-    self.response.out.write('Hello, webapp World!')
+    template = ezt.Template(os.path.join(_RESOURCE_ROOT, 'templates',
+                                         'main.ezt'))
+    template.generate(self.response.out, {})
 
 
 ## temp!!
