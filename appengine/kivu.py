@@ -1,6 +1,7 @@
 import os
 import sys
 
+import cgi
 from google.appengine.api import users
 from google.appengine.ext import webapp
 from google.appengine.ext.webapp.util import run_wsgi_app
@@ -31,12 +32,28 @@ class MainPage(webapp.RequestHandler):
                                          'main.ezt'))
     template.generate(self.response.out, {})
 
+class PostBalance(webapp.RequestHandler):
+  @EnsureLoggedIn
+  def post(self):
+    database.Database().SetBalance(users.get_current_user(),
+                                   cgi.escape(self.request.get('borrower')),
+                                   cgi.escape(self.request.get('amount')))
+    self.redirect('/balance')
 
-## temp!!
 class AddBalance(webapp.RequestHandler):
   @EnsureLoggedIn
   def get(self):
-    self.response.headers['Content-Type'] = 'text/plain'
+    self.response.headers['Content-Type'] = 'text/html'
+    self.response.out.write("""
+      <html>
+        <body>
+          <form action="/tmp_post_balance" method="post">
+            borrower <div><input name="borrower" type="text"/></div>
+            amount <div><input name="amount" type="text"/></div>
+            <div><input type="submit" value="add balance"></div>
+          </form>
+        </body>
+      </html>""")
 
 
 class BalancePage(webapp.RequestHandler):
@@ -44,12 +61,18 @@ class BalancePage(webapp.RequestHandler):
   def get(self):  
     self.response.headers['Content-Type'] = 'text/plain'
     balance = database.Database().getBalance(users.get_current_user())
-    self.response.out.write('Your balance is %d' % balance)
+    if balance > 0:
+      self.response.out.write('You\'re owed $%d' % balance)
+    else:
+      self.response.out.write('You owe $%d' % abs(balance))
 
 
 application = webapp.WSGIApplication(
                                      [('/', MainPage),
-                                      ('/balance', BalancePage)],
+                                      ('/balance', BalancePage),
+                                      ('/add_balance', AddBalance),
+                                      ('/tmp_post_balance', PostBalance),
+                                     ],
                                      debug=True)
 
 def main():

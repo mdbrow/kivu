@@ -1,4 +1,5 @@
 from google.appengine.ext import db
+from google.appengine.api import users
 
 class Balance(db.Model):
   lender = db.UserProperty()
@@ -16,8 +17,15 @@ class Database():
                                     "borrower = :1 ORDER BY lender"), user)
     total_balance = 0
     for b in accounts_receivable:
-      total_balance += balance
-    for b in accounts_receivable:
-      total_balance -= balance
+      total_balance += b.balance
+    for b in accounts_payable:
+      total_balance -= b.balance
     return total_balance
+
+  def SetBalance(self, user, borrower, amount): 
+    b = Balance()
+    b.lender = user
+    b.borrower = users.User(borrower)
+    b.balance = int(amount)
+    b.put()
 
