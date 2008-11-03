@@ -13,6 +13,12 @@ public final class R {
     public static final class drawable {
         public static final int icon=0x7f020000;
     }
+    public static final class id {
+        public static final int AnalogClock01=0x7f050000;
+        public static final int CheckBox01=0x7f050002;
+        public static final int LinearLayout01=0x7f050001;
+        public static final int ToggleButton01=0x7f050003;
+    }
     public static final class layout {
         public static final int main=0x7f030000;
     }
